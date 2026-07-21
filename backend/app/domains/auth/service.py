@@ -30,6 +30,15 @@ def create_user(
     db: Session,
     user_data: UserCreate
 ) -> User:
+
+    existing_user = get_user_by_email(
+        db,
+        user_data.email
+    )
+
+    if existing_user:
+        raise ValueError("Email already registered")
+
     hashed_password = hash_password(user_data.password)
 
     user = User(
@@ -40,5 +49,6 @@ def create_user(
     db.add(user)
     db.commit()
     db.refresh(user)
+
 
     return user
